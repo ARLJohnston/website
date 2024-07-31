@@ -1,17 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
-	"github.com/a-h/templ"
+	"context"
+	"log"
+	"os"
 )
 
 func main() {
-	component := hello("Alistair")
+	f, err := os.Create("hello.html")
+	if err != nil {
+		log.Fatalf("failed to create output file: %v", err)
+	}
 
-	http.Handle("/", templ.Handler(component))
-
-	fmt.Println("Listening on :3000")
-	http.ListenAndServe(":3000", nil)
+	err = hello("Alistair").Render(context.Background(), f)
+	if err != nil {
+		log.Fatalf("failed to write output file: %v", err)
+	}
 }
